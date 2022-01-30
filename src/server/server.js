@@ -54,7 +54,7 @@ app.use(errorHandler());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 // app.use(validator())
-app.use(express.static('../public'));
+app.use(express.static('public'));
 
 // app.use((req, res, next) => {
 //   req.messages = db.collection('sensData_2021');
