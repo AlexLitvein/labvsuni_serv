@@ -1,22 +1,25 @@
 const path = require('path');
+// const webpack = require('webpack');
+const nodeExternals = require('webpack-node-externals');
 
 module.exports = {
   entry: {
-    // client: path.resolve(__dirname, 'src/client', 'index.js'),
-    client: path.resolve(__dirname, 'src/server', 'server.js'),
-    // server: path.resolve(__dirname, 'src/server', 'server.js'),
-    // server: {
-    //   import: './src/server/server.js',
-    //   filename: './bin/[name].[ext]',
-    // },
-    // server: { import: './about.js', filename: 'pages/[name][ext]' },
+    server: path.resolve(__dirname, './src/server', 'server.js'),
   },
   output: {
     path: path.resolve(__dirname, 'bin'),
-    filename: 'bundle.js',
-    assetModuleFilename: 'media/[name][ext][query]',
-    clean: true,
+    filename: '[name].js',
+    clean: {
+      keep: /public\//, // Keep these assets under 'ignored/dir'.
+    },
   },
+  target: 'node',
+  node: {
+    // Need this when working with express, otherwise the build fails
+    __dirname: false, // if you don't put this is, __dirname
+    __filename: false, // and __filename return blank or /
+  },
+  externals: [nodeExternals()], // Need this to avoid error when working with Express
   resolve: {
     modules: [path.join(__dirname, 'src'), 'node_modules'],
     alias: {
@@ -26,13 +29,12 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/,
+        test: /\.js$/,
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
         },
       },
-
     ],
   },
   plugins: [],

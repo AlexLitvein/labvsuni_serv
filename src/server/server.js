@@ -4,30 +4,21 @@
 // })
 
 const express = require('express');
-// mongodb = require('mongodb'),
 const app = express();
-// validator = require('express-validator'),
+const { MongoClient } = require('mongodb');
 const logger = require('morgan');
 const errorHandler = require('errorhandler');
 const compression = require('compression');
-// url = 'mongodb://localhost:27017',
 const uri = 'mongodb://labvsuni:lab@134.90.161.173:27617';
+
 // ReactDOMServer = require('react-dom/server'),
 // React = require('react');
-
-const { MongoClient } = require('mongodb');
-let db = null;
+// validator = require('express-validator'),
 // const { body, validationResult } = require('express-validator');
-
+let db = null;
 // const exphbs = require('express-handlebars');
 // app.engine('hbs', exphbs({ defaultLayout: 'main', extname: '.hbs' }));
 // app.set('view engine', 'hbs');
-
-// const Header = require('./components/header.jsx')
-// const Footer = require('./components/footer.jsx')
-// const MessageBoard = require('./components/board.jsx');
-// const { default: SvgChart } = require('./components/SvgChart.js');
-// const { default: App } = require('./client/App.jsx');
 
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
@@ -63,7 +54,7 @@ app.use(errorHandler());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 // app.use(validator())
-app.use(express.static('public'));
+app.use(express.static('../public'));
 
 // app.use((req, res, next) => {
 //   req.messages = db.collection('sensData_2021');
@@ -79,10 +70,7 @@ app.post('/weather/getSensData', async function (req, res, next) {
 
   const collName = 'sensData_' + date.getFullYear();
   const coll = db.collection(collName);
-  const cursor = await coll.find(
-    { _id: { $gte: date } },
-    { limit: range * 24 + 1, sort: { _id: 1 } }
-  );
+  const cursor = await coll.find({ _id: { $gte: date } }, { limit: range * 24 + 1, sort: { _id: 1 } });
 
   // console.log(data);
   // ,
