@@ -56,34 +56,47 @@ app.use(express.json());
 // app.use(validator())
 app.use(express.static('public'));
 
-// app.use((req, res, next) => {
-//   req.messages = db.collection('sensData_2021');
-//   return next()
-// })
+// app.post('/weather/getCurrSensData', async function (req, res, next) {
+//   const coll = db.collection('currSensData');
+//   const cursor = await coll.findOne({});
+//   // const data = await cursor.toArray();
+//   // console.log(data);
+//   res.json(cursor);
+// });
+
+// app.post('/weather/getSensData', async function (req, res, next) {
+//   const date = new Date(req.body.startData);
+//   date.setHours(0);
+//   const range = parseInt(req.body.range);
+//   // console.log(`date: ${date}, range: ${range}`);
+
+//   const collName = 'sensData_' + date.getFullYear();
+//   const coll = db.collection(collName);
+//   const cursor = await coll.find({ _id: { $gte: date } }, { limit: range * 24 + 1, sort: { _id: 1 } });
+//   const data = await cursor.toArray();
+//   // console.log(data);
+//   res.json(data);
+// });
 
 app.post('/weather/getSensData', async function (req, res, next) {
+  // const out={};
   const date = new Date(req.body.startData);
   date.setHours(0);
   const range = parseInt(req.body.range);
-  // console.log('req data: %s %d', date, range);
-  console.log(`date: ${date}, range: ${range}`);
+  // console.log(`date: ${date}, range: ${range}`);
 
-  const collName = 'sensData_' + date.getFullYear();
-  const coll = db.collection(collName);
-  const cursor = await coll.find({ _id: { $gte: date } }, { limit: range * 24 + 1, sort: { _id: 1 } });
-
+  // const collName = 'sensData_' + date.getFullYear();
+  let coll = db.collection('sensData_' + date.getFullYear());
+  let cursor = await coll.find({ _id: { $gte: date } }, { limit: range * 24 + 1, sort: { _id: 1 } });
+  const arrData = await cursor.toArray();
   // console.log(data);
-  // ,
-  //     function (err, cursor) {
-  //       if (err) throw err;
-  // const data = await cursor.toArray(function (err, itemArr) {
-  //         if (err) throw err;
-  //         res.json(itemArr);
-  //       });
+  await cursor.close();
 
-  const data = await cursor.toArray();
-  // console.log(data);
-  res.json(data);
+  coll = db.collection('currSensData');
+  cursor = await coll.findOne({});
+  // await cursor.close();
+
+  res.json({ currSensData: cursor, arrSensData: arrData });
 });
 
 // app.post('/messages', (req, res, next) => {
