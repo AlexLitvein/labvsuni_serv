@@ -4,14 +4,15 @@ const nodeExternals = require('webpack-node-externals');
 
 module.exports = {
   entry: {
-    server: path.resolve(__dirname, './src/server', 'server.js'),
+    main: path.resolve(__dirname, './src/', 'main.js'),
+    DataCollector: path.resolve(__dirname, './src/', 'DataCollector.js'),
   },
   output: {
-    path: path.resolve(__dirname, 'bin'),
+    path: path.resolve(__dirname, './'),
     filename: '[name].js',
-    clean: {
-      keep: /public\//, // Keep these assets under 'ignored/dir'.
-    },
+    // clean: {
+    //   keep: /public\//, // Keep these assets under 'ignored/dir'.
+    // },
   },
   target: 'node',
   node: {

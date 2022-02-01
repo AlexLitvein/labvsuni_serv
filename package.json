@@ -2,7 +2,7 @@
   "name": "labvsuni_serv",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "",
   "scripts": {
     "dev": "webpack --mode=development",
     "build": "webpack --mode=production"
@@ -43,6 +43,7 @@
     "errorhandler": "^1.4.1",
     "express": "^4.17.1",
     "mongodb": "^4.1.4",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "node-cron": "^2.0.3"
   }
 }

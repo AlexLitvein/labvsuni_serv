@@ -1,0 +1,15 @@
+[Unit]
+Description="labvsuni"
+
+[Service]
+ExecStart=/usr/bin/node main.js
+WorkingDirectory=/home/ubuntu/www/labvsuni
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=MyApp
+Environment=NODE_ENV=production PORT=80
+
+[Install]
+WantedBy=multi-user.target

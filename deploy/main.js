@@ -6,10 +6,11 @@
 const express = require('express');
 const app = express();
 const { MongoClient } = require('mongodb');
-const logger = require('morgan');
-const errorHandler = require('errorhandler');
-const compression = require('compression');
-const uri = 'mongodb://labvsuni:lab@134.90.161.173:27617';
+// const logger = require('morgan');
+// const errorHandler = require('errorhandler');
+// const compression = require('compression');
+// const uri = 'mongodb://labvsuni:lab@134.90.161.173:27617';
+const uri = 'mongodb://labvsuni:lab@127.0.0.1:27017';
 
 // ReactDOMServer = require('react-dom/server'),
 // React = require('react');
@@ -48,9 +49,9 @@ run().catch(console.dir);
 
 //   let db = client.db('SensDb');
 
-app.use(compression());
-app.use(logger('dev'));
-app.use(errorHandler());
+// app.use(compression());
+// app.use(logger('dev'));
+// app.use(errorHandler());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 // app.use(validator())
@@ -146,6 +147,7 @@ app.post('/weather/getSensData', async function (req, res, next) {
 //   })
 // })
 
-app.listen(3000);
+// app.listen(3000);
+app.listen(80);
 console.log('\x1b[33m%s\x1b[0m', 'serv started');
 // })
