@@ -1,25 +1,85 @@
-// TODO: @babel/register
+// @babel/register
 // require('@babel/register')({
 //   presets: ['@babel/preset-react']
 // })
 
+const { Server } = require('socket.io');
+const { createServer } = require('http');
 const express = require('express');
-const app = express();
 const { MongoClient } = require('mongodb');
 // const logger = require('morgan');
-// const errorHandler = require('errorhandler');
-// const compression = require('compression');
-// const uri = 'mongodb://labvsuni:lab@134.90.161.173:27617';
-const uri = 'mongodb://labvsuni:lab@127.0.0.1:27017';
+const errorHandler = require('errorhandler');
+const compression = require('compression');
+const cron = require('node-cron');
+
+let db = null;
+let visitCount = 0;
+const uri = 'mongodb://labvsuni:lab@134.90.161.173:27617';
+// const uri = 'mongodb://labvsuni:lab@127.0.0.1:27017'
+
+//=============================
+
+const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  /* options */
+});
+
+// TODO
+// httpServer.listen(3000);
+httpServer.listen(80);
+console.log('\x1b[33m%s\x1b[0m', 'serv started');
+
+//=============================
+
+io.on('connection', (socket) => {
+  visitCount++;
+  // console.log(visitCount);
+  sendToAll(socket, 'statistic', { visitCount, online: io.engine.clientsCount });
+
+  socket.on('disconnect', () => {
+    sendToAll(socket, 'statistic', { visitCount, online: io.engine.clientsCount });
+  });
+});
+
+function sendToAll(socket, msg, data) {
+  socket.emit(msg, data);
+  socket.broadcast.emit(msg, data);
+}
 
 // ReactDOMServer = require('react-dom/server'),
 // React = require('react');
 // validator = require('express-validator'),
 // const { body, validationResult } = require('express-validator');
-let db = null;
+
 // const exphbs = require('express-handlebars');
 // app.engine('hbs', exphbs({ defaultLayout: 'main', extname: '.hbs' }));
 // app.set('view engine', 'hbs');
+
+// =====cron=======
+// ┌────────────── second (optional)
+// │ ┌──────────── minute
+// │ │ ┌────────── hour
+// │ │ │ ┌──────── day of month
+// │ │ │ │ ┌────── month
+// │ │ │ │ │ ┌──── day of week
+// * * * * * *
+const task = cron.schedule(
+  '* */24 * * *',
+  () => {
+    // '0 */1 * * *'
+    // console.log('boom!');
+    // console.log(visitCount.GetName());
+    visitCount = 0;
+  },
+  {
+    scheduled: true,
+    timezone: 'Asia/Novosibirsk',
+  }
+);
+task.start();
+// task.stop();
+// ==================
 
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
@@ -40,47 +100,20 @@ async function run() {
 }
 run().catch(console.dir);
 
-// mongodb.MongoClient.connect(url, function (err, client) {
-//   // mongodb.MongoClient.connect(url, (err, db) => {
-//   if (err) {
-//     console.error(err)
-//     process.exit(1)
-//   }
-
-//   let db = client.db('SensDb');
-
-// app.use(compression());
+app.use(compression());
 // app.use(logger('dev'));
-// app.use(errorHandler());
+app.use(errorHandler());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 // app.use(validator())
 app.use(express.static('public'));
 
-// app.post('/weather/getCurrSensData', async function (req, res, next) {
-//   const coll = db.collection('currSensData');
-//   const cursor = await coll.findOne({});
-//   // const data = await cursor.toArray();
-//   // console.log(data);
-//   res.json(cursor);
-// });
-
-// app.post('/weather/getSensData', async function (req, res, next) {
-//   const date = new Date(req.body.startData);
-//   date.setHours(0);
-//   const range = parseInt(req.body.range);
-//   // console.log(`date: ${date}, range: ${range}`);
-
-//   const collName = 'sensData_' + date.getFullYear();
-//   const coll = db.collection(collName);
-//   const cursor = await coll.find({ _id: { $gte: date } }, { limit: range * 24 + 1, sort: { _id: 1 } });
-//   const data = await cursor.toArray();
-//   // console.log(data);
-//   res.json(data);
+// app.get('/', (req, res, next) => {
+//   visitCount++;
+//   next();
 // });
 
 app.post('/weather/getSensData', async function (req, res, next) {
-  // const out={};
   const date = new Date(req.body.startData);
   date.setHours(0);
   const range = parseInt(req.body.range);
@@ -95,6 +128,7 @@ app.post('/weather/getSensData', async function (req, res, next) {
 
   coll = db.collection('currSensData');
   cursor = await coll.findOne({});
+  // WARN: cursor в данном случае не нужно закрывать
   // await cursor.close();
 
   res.json({ currSensData: cursor, arrSensData: arrData });
@@ -147,7 +181,4 @@ app.post('/weather/getSensData', async function (req, res, next) {
 //   })
 // })
 
-// app.listen(3000);
-app.listen(80);
-console.log('\x1b[33m%s\x1b[0m', 'serv started');
 // })

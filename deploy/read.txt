@@ -1,7 +1,8 @@
-Остановить 
+﻿Остановить 
 sudo systemctl stop labvsuni.service datacollector.service
 скопировать деплой файлы в папку сервера
 !!!пакеты ставить старые!!! нода на компе и расбери разные!!!
 npm i
+"socket.io": "^4.4.1"
 sudo systemctl start labvsuni datacollector
 sudo systemctl status labvsuni datacollector

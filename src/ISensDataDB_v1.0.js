@@ -38,7 +38,7 @@ function DataCollector(connectStr) {
     });
   };
 
-  // TODO: temp
+  // temp
   this.AddSensDataMany = function name(nameCollection, arrSensData) {
     MongoClient.connect(url, opt, function (err, gDB) {
       if (err) throw err;
@@ -71,11 +71,6 @@ function DataCollector(connectStr) {
           // displayWords("Words starting with a, b or c: ", cursor);
         });
       });
-      // TODO: ????
-      // setTimeout(function () {
-      //     gDB.close();
-      //     // console.log('db close');
-      // }, 3000);
     });
   };
 
